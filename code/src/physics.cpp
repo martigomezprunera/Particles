@@ -1,6 +1,5 @@
 #include <imgui\imgui.h>
 #include <imgui\imgui_impl_sdl_gl3.h>
-#include <iostream>
 
 //VARIABLES
 bool show_test_window = false;
@@ -35,10 +34,13 @@ float CapsulePosA[3];
 float CapsulePosB[3];
 float CapsuleRadius;
 
-
-
 //Forces
 float GravityAccel[3];
+
+//Funciones externas
+extern void setupPrims();
+extern void cleanupPrims();
+extern void renderPrims();
 
 void GUI() {
 	bool show = true;
@@ -163,14 +165,22 @@ void GUI() {
 void PhysicsInit() {
 	// Do your initialization code here...
 	// ...................................
+
+	setupPrims();
+	
 }
 
 void PhysicsUpdate(float dt) {
 	// Do your update code here...
 	// ...........................
+
+	renderPrims();
+
 }
 
 void PhysicsCleanup() {
 	// Do your cleanup code here...
 	// ............................
+
+	cleanupPrims();
 }
