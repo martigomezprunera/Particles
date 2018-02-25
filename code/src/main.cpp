@@ -58,8 +58,9 @@ int main(int argc, char** argv) {
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 
+	//Tamaño de la pantalla
 	mainwindow = SDL_CreateWindow("GL_framework", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-		800, 600, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+		1200, 800, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
 		if (!mainwindow) { /* Die if creation failed */
 			SDL_Log("Couldn't create SDL window: %s", SDL_GetError());
 			SDL_Quit();
