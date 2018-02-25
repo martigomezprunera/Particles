@@ -42,6 +42,13 @@ extern void setupPrims();
 extern void cleanupPrims();
 extern void renderPrims();
 
+//Variables externas booleans
+extern bool renderSphere;
+extern bool renderCapsule;
+extern bool renderParticles;
+
+//
+
 void GUI() {
 	bool show = true;
 	ImGui::Begin("Physics Parameters", &show, 100);
@@ -62,7 +69,7 @@ void GUI() {
 			//Si presionamos boton
 		if (ImGui::Button("Reset Simulation"))
 		{
-
+	
 		}
 
 		//Emitter
@@ -119,6 +126,12 @@ void GUI() {
 				//Sphere
 				ImGui::InputFloat3("Sphere Position", &SpherePos[0]);
 				ImGui::InputFloat("Sphere Radius", &SphereRadius);
+
+				renderSphere = true;
+			}
+			else
+			{
+				renderSphere = false;
 			}
 
 			//Use Capsule Collider (CheckBox)
@@ -130,6 +143,12 @@ void GUI() {
 				ImGui::InputFloat3("Capsule Pos A", &CapsulePosA[0]);
 				ImGui::InputFloat3("Capsule Pos B", &CapsulePosB[0]);
 				ImGui::InputFloat("Capsule Radius", &CapsuleRadius);
+
+				renderCapsule = true;
+			}
+			else
+			{
+				renderCapsule = false;
 			}
 
 			ImGui::TreePop();
@@ -165,14 +184,20 @@ void GUI() {
 void PhysicsInit() {
 	// Do your initialization code here...
 	// ...................................
-
 	setupPrims();
-	
 }
 
 void PhysicsUpdate(float dt) {
 	// Do your update code here...
 	// ...........................
+	if (checkedSphere)
+	{
+		setupPrims();
+	}
+	else if(checkedCapsule)
+	{
+		setupPrims();
+	}
 
 	renderPrims();
 
