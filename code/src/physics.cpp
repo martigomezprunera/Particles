@@ -247,9 +247,10 @@ void PhysicsUpdate(float dt) {
 			velocidad[i] = velocidad[i] + (dt*(0));
 	}
 
-	//Colision
+	//Colision Y
 	if (myCascade[1] <= 0)
 	{
+		std::cout << "Chocado y" << std::endl;
 		//D
 		d = 0;
 
@@ -273,9 +274,9 @@ void PhysicsUpdate(float dt) {
 			velocidad[i] = velocidad[i] - (2 * (vNormal[2] * velocidad[i]) * vNormal[2]);
 		}
 	}
+	//Colision X
 	else if(myCascade[0] <= -5)
 	{
-
 		std::cout << "Chocado" << std::endl;
 
 		//D
@@ -301,9 +302,20 @@ void PhysicsUpdate(float dt) {
 			velocidad[i] = velocidad[i] - (2 * (vNormal[2] * velocidad[i]) * vNormal[2]);
 		}
 	}
+	//Colision X
 	else if (myCascade[0] >= 5)
 	{
-		std::cout << "Chocado" << std::endl;
+		
+	}
+	//Colision Z
+	else if (myCascade[2] >= 5)
+	{
+		
+	}
+	//Colision Z
+	else if (myCascade[2] >= 5)
+	{
+		
 	}
 
 	LilSpheres::updateParticles(0, numParticles, ptrParticles);
