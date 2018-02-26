@@ -293,17 +293,48 @@ void PhysicsUpdate(float dt) {
 	//Colision X
 	else if (myCascade[0] >= 5)
 	{
-		
+		std::cout << "Chocado" << std::endl;
+
+		//D
+		d = 0;
+
+		//Vector normal
+		vNormal[0] = -1;
+		vNormal[1] = 0;
+		vNormal[2] = 0;
+
+		colisionado = true;
+
+	}
+	//Colision Z
+	else if (myCascade[2] <= -5)
+	{
+		std::cout << "Chocado" << std::endl;
+
+		//D
+		d = 0;
+
+		//Vector normal
+		vNormal[0] = 0;
+		vNormal[1] = 0;
+		vNormal[2] = -1;
+
+		colisionado = true;
 	}
 	//Colision Z
 	else if (myCascade[2] >= 5)
 	{
-		
-	}
-	//Colision Z
-	else if (myCascade[2] >= 5)
-	{
-		
+		std::cout << "Chocado" << std::endl;
+
+		//D
+		d = 0;
+
+		//Vector normal
+		vNormal[0] = 0;
+		vNormal[1] = 0;
+		vNormal[2] = 1;
+
+		colisionado = true;
 	}
 
 	if (colisionado == true)
