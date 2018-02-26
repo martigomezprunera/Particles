@@ -1,5 +1,16 @@
 #include <imgui\imgui.h>
 #include <imgui\imgui_impl_sdl_gl3.h>
+#include <iostream>
+#include <stdlib.h>
+
+
+namespace LilSpheres {
+	extern void setupParticles(int numTotalParticles, float radius = 0.05f);
+	extern void updateParticles(int startIdx, int count, float* array_data);
+	extern void cleanupParticles();
+};
+
+
 
 //VARIABLES
 bool show_test_window = false;
@@ -18,7 +29,7 @@ int foc;
 //Pos, Dir, Angle
 float Pos[3];
 float Dir[3];
-float Angle;
+float Velocity[3];
 
 //Elasticity, Friction
 float ElasticCoefficient;
@@ -37,39 +48,46 @@ float CapsuleRadius;
 //Forces
 float GravityAccel[3];
 
-//Funciones externas
-extern void setupPrims();
-extern void cleanupPrims();
-extern void renderPrims();
+//Cascada variables
+float myCascade[3000];
+float *ptrParticles;
+int numParticles;
 
-//Variables externas booleans
-extern bool renderSphere;
-extern bool renderCapsule;
-extern bool renderParticles;
+//Auxiliares velocidades
+float velocidad[300];
+bool colisionado;
 
-//
+//D del plano
+float d;
+
+//vector normal
+float vNormal[3];
+
+//Auxiliares posiciones
+float auxPos[3000];
+float auxVel[3000];
 
 void GUI() {
 	bool show = true;
 	ImGui::Begin("Physics Parameters", &show, 100);
 
 	// Do your GUI code here....
-	{	
+	{
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);//FrameRate
-		
-		//Play Simulation (CheckBox)
+
+																																  //Play Simulation (CheckBox)
 		ImGui::Checkbox("Play Simulation", &checkedSimulation);
-		
+
 		//Call Simulation
-		if(checkedSimulation){
+		if (checkedSimulation) {
 
 		}
 
 		//Call Reset Simulation
-			//Si presionamos boton
+		//Si presionamos boton
 		if (ImGui::Button("Reset Simulation"))
 		{
-	
+
 		}
 
 		//Emitter
@@ -80,14 +98,14 @@ void GUI() {
 			ImGui::InputFloat("Particle life", &ParticleLife);
 
 			//Fountain || Cascade
-			ImGui::RadioButton("Fountain", &foc, 0); 
+			ImGui::RadioButton("Fountain", &foc, 0);
 			ImGui::SameLine();
 			ImGui::RadioButton("Cascade", &foc, 1);
 
 			//Pos, Dir, Angle
 			ImGui::InputFloat3("Fountain pos", &Pos[0]);
 			ImGui::InputFloat3("Fountain dir", &Dir[0]);
-			ImGui::InputFloat("Angle", &Angle);
+			ImGui::InputFloat3("Fountain velocity", &Velocity[0]);
 
 			//Call Function Fountain
 			if (foc == 0)
@@ -100,7 +118,7 @@ void GUI() {
 			{
 
 			}
-			
+
 			ImGui::TreePop();
 		}
 
@@ -120,18 +138,18 @@ void GUI() {
 		{
 			//Use Sphere Collider (CheckBox)
 			ImGui::Checkbox("Use Sphere Collider", &checkedSphere);
-			
+
 			if (checkedSphere)
 			{
 				//Sphere
 				ImGui::InputFloat3("Sphere Position", &SpherePos[0]);
 				ImGui::InputFloat("Sphere Radius", &SphereRadius);
 
-				renderSphere = true;
+
 			}
 			else
 			{
-				renderSphere = false;
+
 			}
 
 			//Use Capsule Collider (CheckBox)
@@ -144,17 +162,17 @@ void GUI() {
 				ImGui::InputFloat3("Capsule Pos B", &CapsulePosB[0]);
 				ImGui::InputFloat("Capsule Radius", &CapsuleRadius);
 
-				renderCapsule = true;
+
 			}
 			else
 			{
-				renderCapsule = false;
+
 			}
 
 			ImGui::TreePop();
 		}
 
-		
+
 		//Forces
 		ImGui::SetNextTreeNodeOpen(true, ImGuiSetCond_Once);
 		if (ImGui::TreeNode("Forces"))
@@ -162,7 +180,7 @@ void GUI() {
 			//Use Gravity (CheckBox)
 			ImGui::Checkbox("Use Gravity", &checkedGravity);
 
-			if(checkedGravity)
+			if (checkedGravity)
 			{
 				ImGui::InputFloat3("Gravity Accel", &GravityAccel[0]);
 			}
@@ -171,11 +189,11 @@ void GUI() {
 		}
 	}
 	// .........................
-	
+
 	ImGui::End();
 
 	// Example code -- ImGui test window. Most of the sample code is in ImGui::ShowTestWindow()
-	if(show_test_window) {
+	if (show_test_window) {
 		ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiSetCond_FirstUseEver);
 		ImGui::ShowTestWindow(&show_test_window);
 	}
@@ -184,28 +202,117 @@ void GUI() {
 void PhysicsInit() {
 	// Do your initialization code here...
 	// ...................................
-	setupPrims();
+	int i = 0;
+
+	while (i < (3 * 1000))
+	{
+		//POS X
+		myCascade[i] = 2;
+		velocidad[i] = -5;
+		i++;
+
+		//POS Y
+		myCascade[i] = 5;
+		velocidad[i] = -2;
+		i++;
+
+		//POS Z
+		myCascade[i] = ((float)(rand() % 100) / 10) - 5;
+		velocidad[i] = 0;
+		i++;
+	}
+	//velocidadiX = ;
+	ptrParticles = myCascade;
+	numParticles = 100;
 }
 
 void PhysicsUpdate(float dt) {
 	// Do your update code here...
 	// ...........................
-	if (checkedSphere)
+
+
+	for (int i = 0; i < numParticles; i++)
 	{
-		setupPrims();
-	}
-	else if(checkedCapsule)
-	{
-		setupPrims();
+			//X
+			myCascade[i] = myCascade[i] + (dt*velocidad[i]);
+			velocidad[i] = velocidad[i] + (dt*(0));
+			i++;
+
+			myCascade[i] = myCascade[i] + (dt*velocidad[i]);
+			velocidad[i] = velocidad[i] + (dt*(-9.81f));
+			i++;
+
+			//Z
+			myCascade[i] = myCascade[i] + (dt*velocidad[i]);
+			velocidad[i] = velocidad[i] + (dt*(0));
 	}
 
-	renderPrims();
+	//Colision
+	if (myCascade[1] <= 0)
+	{
+		//D
+		d = 0;
 
+		//Vector normal
+		vNormal[0] = 0;
+		vNormal[1] = 1;
+		vNormal[2] = 0;
+
+		for (int i = 0; i < numParticles; i++)
+		{
+			myCascade[i] = myCascade[i] - (2 * (vNormal[0] * myCascade[i]) * vNormal[0]);
+			velocidad[i] = velocidad[i] - (2 * (vNormal[0] * velocidad[i]) * vNormal[0]);
+			i++;
+
+			myCascade[i] = myCascade[i] - (2 * (vNormal[1] * myCascade[i]) * vNormal[1]);
+			velocidad[i] = velocidad[i] - (2 * (vNormal[1] * velocidad[i]) * vNormal[1]);
+			i++;
+
+			//Z
+			myCascade[i] = myCascade[i] - (2 * (vNormal[2] * myCascade[i]) * vNormal[2]);
+			velocidad[i] = velocidad[i] - (2 * (vNormal[2] * velocidad[i]) * vNormal[2]);
+		}
+	}
+	else if(myCascade[0] <= -5)
+	{
+
+		std::cout << "Chocado" << std::endl;
+
+		//D
+		d = 0;
+
+		//Vector normal
+		vNormal[0] = 1;
+		vNormal[1] = 0;
+		vNormal[2] = 0;
+
+		for (int i = 0; i < numParticles; i++)
+		{
+			myCascade[i] = myCascade[i] - (2 * (vNormal[0] * myCascade[i]) * vNormal[0]);
+			velocidad[i] = velocidad[i] - (2 * (vNormal[0] * velocidad[i]) * vNormal[0]);
+			i++;
+
+			myCascade[i] = myCascade[i] - (2 * (vNormal[1] * myCascade[i]) * vNormal[1]);
+			velocidad[i] = velocidad[i] - (2 * (vNormal[1] * velocidad[i]) * vNormal[1]);
+			i++;
+
+			//Z
+			myCascade[i] = myCascade[i] - (2 * (vNormal[2] * myCascade[i]) * vNormal[2]);
+			velocidad[i] = velocidad[i] - (2 * (vNormal[2] * velocidad[i]) * vNormal[2]);
+		}
+	}
+	else if (myCascade[0] >= 5)
+	{
+		std::cout << "Chocado" << std::endl;
+	}
+
+	LilSpheres::updateParticles(0, numParticles, ptrParticles);
 }
+
 
 void PhysicsCleanup() {
 	// Do your cleanup code here...
 	// ............................
+	LilSpheres::cleanupParticles();
 
-	cleanupPrims();
 }
