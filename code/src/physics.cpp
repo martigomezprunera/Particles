@@ -259,20 +259,21 @@ void PhysicsUpdate(float dt) {
 		vNormal[1] = 1;
 		vNormal[2] = 0;
 
-		for (int i = 0; i < numParticles; i++)
-		{
-			myCascade[i] = myCascade[i] - (2 * (vNormal[0] * myCascade[i]) * vNormal[0]);
-			velocidad[i] = velocidad[i] - (2 * (vNormal[0] * velocidad[i]) * vNormal[0]);
-			i++;
+		colisionado = true;
+	}
+	//Colision Y
+	else if (myCascade[1] >= 10)
+	{
+		std::cout << "Chocado y" << std::endl;
+		//D
+		d = 0;
 
-			myCascade[i] = myCascade[i] - (2 * (vNormal[1] * myCascade[i]) * vNormal[1]);
-			velocidad[i] = velocidad[i] - (2 * (vNormal[1] * velocidad[i]) * vNormal[1]);
-			i++;
+		//Vector normal
+		vNormal[0] = 0;
+		vNormal[1] = -1;
+		vNormal[2] = 0;
 
-			//Z
-			myCascade[i] = myCascade[i] - (2 * (vNormal[2] * myCascade[i]) * vNormal[2]);
-			velocidad[i] = velocidad[i] - (2 * (vNormal[2] * velocidad[i]) * vNormal[2]);
-		}
+		colisionado = true;
 	}
 	//Colision X
 	else if(myCascade[0] <= -5)
@@ -287,20 +288,7 @@ void PhysicsUpdate(float dt) {
 		vNormal[1] = 0;
 		vNormal[2] = 0;
 
-		for (int i = 0; i < numParticles; i++)
-		{
-			myCascade[i] = myCascade[i] - (2 * (vNormal[0] * myCascade[i]) * vNormal[0]);
-			velocidad[i] = velocidad[i] - (2 * (vNormal[0] * velocidad[i]) * vNormal[0]);
-			i++;
-
-			myCascade[i] = myCascade[i] - (2 * (vNormal[1] * myCascade[i]) * vNormal[1]);
-			velocidad[i] = velocidad[i] - (2 * (vNormal[1] * velocidad[i]) * vNormal[1]);
-			i++;
-
-			//Z
-			myCascade[i] = myCascade[i] - (2 * (vNormal[2] * myCascade[i]) * vNormal[2]);
-			velocidad[i] = velocidad[i] - (2 * (vNormal[2] * velocidad[i]) * vNormal[2]);
-		}
+		colisionado = true;
 	}
 	//Colision X
 	else if (myCascade[0] >= 5)
@@ -317,6 +305,26 @@ void PhysicsUpdate(float dt) {
 	{
 		
 	}
+
+	if (colisionado == true)
+	{
+		for (int i = 0; i < numParticles; i++)
+		{
+			myCascade[i] = myCascade[i] - (2 * (vNormal[0] * myCascade[i]) * vNormal[0]);
+			velocidad[i] = velocidad[i] - (2 * (vNormal[0] * velocidad[i]) * vNormal[0]);
+			i++;
+
+			myCascade[i] = myCascade[i] - (2 * (vNormal[1] * myCascade[i]) * vNormal[1]);
+			velocidad[i] = velocidad[i] - (2 * (vNormal[1] * velocidad[i]) * vNormal[1]);
+			i++;
+
+			myCascade[i] = myCascade[i] - (2 * (vNormal[2] * myCascade[i]) * vNormal[2]);
+			velocidad[i] = velocidad[i] - (2 * (vNormal[2] * velocidad[i]) * vNormal[2]);
+		}
+		colisionado = false;
+	}
+	
+
 
 	LilSpheres::updateParticles(0, numParticles, ptrParticles);
 }
